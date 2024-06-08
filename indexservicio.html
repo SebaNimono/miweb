@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servicio Médico a Domicilio / VitaHealth</title>
+    <link rel="icon" type="image/png" href="images/healtlogo.avif">
+    <link rel="stylesheet" href="styleservicio.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/tooplate-style.css">
+    <link rel="stylesheet" href="css/animate.css">
+    
+</head>
+<body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Servicio Médico</a>
+            </div>
+            <div class="collapse navbar-collapse" id="myNavbar">
+                <ul class="nav navbar-nav navbar-right">
+                     <li><a href="index.html#top" class="smoothScroll">Inicio</a></li>
+                     <li><a href="index.html#about" class="smoothScroll">Sobre nosotros</a></li>
+                     <li><a href="index.html#team" class="smoothScroll">Doctores</a></li>
+                     <li><a href="index.html#news" class="smoothScroll">Noticias</a></li>
+                     <li><a href="indexservicio.html" class="smoothScroll">Servicios </a></li>
+                     <li><a href="user.html" class="smoothScroll">Cuenta</a></li>
+                     <li><a href="index.html#google-map" class="smoothScroll">Contacto</a></li>
+                     <li class="appointment-btn"><a href="index.html#appointment">Haga una cita</a></li>
+                </ul>
+           </div>
+       </div>
+   </nav>
+
+   <div class="container">
+        <h1 class="text-center">Servicio Médico a Domicilio</h1>
+
+        <div id="doctors" class="row">
+            <h2 class="text-center">Elige tu médico</h2>
+            <div class="col-md-4">
+                <div class="doctor text-center">
+                    <img src="images/doctor1.jpeg" alt="Doctor 1">
+                    <p>Dr. Nicolas Carrasco</p>
+                    <p>Medico General</p>
+                    <button class="select-doctor btn btn-primary" data-price="185000">Seleccionar</button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="doctor text-center">
+                    <img src="images/doctor2.jpg" alt="Doctor 2">
+                    <p>Dr. Andree Maartinez</p>
+                    <p>Pediatra</p>
+                    <button class="select-doctor btn btn-primary" data-price="197000">Seleccionar</button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="doctor text-center">
+                    <img src="images/doctor3.jpg" alt="Doctor 3">
+                    <p>Dr. Carla Sancheze</p>
+                    <p>Ginecologo</p>
+                    <button class="select-doctor btn btn-primary" data-price="189000">Seleccionar</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="cart" class="row">
+            <h2 class="text-center">Carrito</h2>
+            <ul id="cart-items"></ul>
+            <p id="total" class="text-center">Total: $0</p>
+        </div>
+
+        <div id="payment" style="display: none;" class="row">
+            <h2 class="text-center">Pago</h2>
+            <div id="credit-card" class="text-center">
+                <label for="card-number">Número de Tarjeta:</label><br>
+                <input type="text" id="card-number" class="form-control" pattern="[0-9]{4} [0-9]{4} [0-9]{4} [0-9]{4}" placeholder="1234 5678 9101 1213" required><br>
+                <label for="expiry-date">Fecha de Vencimiento (MM/AA):</label><br>
+                <input type="text" id="expiry-date" class="form-control" pattern="(0[1-9]|1[0-2])\/[0-9]{2}" placeholder="MM/AA" required><br>
+                <label for="cvv">CVV:</label><br>
+                <input type="text" id="cvv" class="form-control" pattern="[0-9]{3}" placeholder="123" required><br>
+            </div>
+            <button id="checkout" class="btn btn-success">Contratar</button>
+        </div>
+    </div>
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="servicio.js"></script>
+</body>
+</html>
