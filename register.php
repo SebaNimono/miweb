@@ -2,8 +2,7 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "vitahealth";
-
+$dbname = "clinicaweb";
 
 
 // Crear conexión
@@ -27,14 +26,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($result->num_rows > 0) {
         // Ya existe un usuario con ese nombre de usuario o correo electrónico
-        echo "fail";
+        echo "Fail";
     } else {
         // No se encontró ningún usuario existente, se puede proceder con la inserción
         $stmt = $conn->prepare("INSERT INTO creacion (username, email, password) VALUES (?, ?, ?)");
         $stmt->bind_param("sss", $username, $email, $password);
         
         if ($stmt->execute()) {
-            echo "success";
+            echo "Se ha registrado correctamente";
         } else {
             echo "Correcto " . $stmt->error;
         }
