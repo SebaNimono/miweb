@@ -19,15 +19,14 @@ function register() {
 
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
-            if (xhr.responseText === "success") {
+            if (xhr.responseText === "Se ha registrado correctamente") {
                 alert("¡Registro exitoso!\n¡Bienvenido, " + username + "!");
-                window.location.href = "user.html";
-                // Vaciar campos del formulario
+                window.location.href = "perfil.html";
                 document.getElementById("reg-username").value = "";
                 document.getElementById("reg-email").value = "";
                 document.getElementById("reg-password").value = "";
             } else {
-                alert("Correcto: " + xhr.responseText);
+                alert("La Web Dice: " + xhr.responseText);
             }
         }
     };
@@ -39,6 +38,8 @@ function validateEmail(email) {
     var re = /\S+@\S+\.\S+/;
     return re.test(email);
 }
+
+
 
 
 

@@ -1,47 +1,36 @@
 <?php
-session_start();
-if (!isset($_SESSION['usuario'])) {
-    echo 'error';
-    exit();
-}
-
 $servername = "localhost";
 $username = "root";
 $password = "";
 $dbname = "clinicaweb";
 
-// Crear conexión
+// Establece la conexión
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Comprobar conexión
+// Verifica la conexión
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    die("Conexión fallida: " . $conn->connect_error);
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_SESSION['usuario'];
-    $cardNumber = $_POST['card_number'];
-    $expiryDate = $_POST['expiry_date'];
-    $cvv = $_POST['cvv'];
-    $cart = json_decode($_POST['cart'], true);
-    $total = $_POST['total'];
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    // Obtener datos de la compra
+    $username = $_SESSION["username"]; 
+    $doctorName = $_POST["doctorName"];
+    $doctorPrice = $_POST["doctorPrice"];
+    $quantity = $_POST["quantity"];
+    $totalPrice = $doctorPrice * $quantity; 
+    $cardNumber = $_POST["cardNumber"];
+    $expiryDate = $_POST["expiryDate"];
+    $cvv = $_POST["cvv"];
 
-    foreach ($cart as $item) {
-        $doctorName = $item['doctor_name'];
-        $price = $item['price'];
-        $quantity = $item['quantity'];
-        $totalPrice = $price * $quantity;
+  
+    $sql = "INSERT INTO orders (username, doctor_name, doctor_price, quantity, total_price, card_number, expiry_date, cvv) VALUES ('$username', '$doctorName', '$doctorPrice', '$quantity', '$totalPrice', '$cardNumber', '$expiryDate', '$cvv')";
 
-        $stmt = $conn->prepare("INSERT INTO orders (username, doctor_name, doctor_price, quantity, total_price, card_number, expiry_date, cvv) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssiiisss", $username, $doctorName, $price, $quantity, $totalPrice, $cardNumber, $expiryDate, $cvv);
-        
-        if (!$stmt->execute()) {
-            echo "fail";
-            exit;
-        }
+    if ($conn->query($sql) === TRUE) {
+        echo "success";
+    } else {
+        echo "Error: " . $sql . "<br>" . $conn->error;
     }
-
-    echo "success";
 }
 
 $conn->close();

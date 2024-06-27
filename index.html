@@ -337,34 +337,40 @@
           </div>
      </section>
      <script>
-          document.addEventListener('DOMContentLoaded', function() {
-              fetch('https://randomuser.me/api/')
-                  .then(response => response.json())
-                  .then(data => {
-                      const user = data.results[0];
-                      document.getElementById('gender').textContent = user.gender === 'male' ? 'Masculino' : 'Femenino';
-                      document.getElementById('location').textContent = `${user.location.city}, ${user.location.state}, ${user.location.country}`;
-                      document.getElementById('phone').textContent = user.phone;
-                      document.getElementById('cell').textContent = user.cell;
-                      document.getElementById('age').textContent = user.dob.age;
-                  })
-                  .catch(error => {
-                      console.error('Error al obtener datos:', error);
-                      const userInfoDiv = document.getElementById('user-info');
-                      userInfoDiv.innerHTML = '<p>Error al cargar la información del usuario.</p>';
-                  });
+          $(document).ready(function() {
+              // Obtener y mostrar información de usuario aleatorio
+              fetchRandomUser();
       
+              // Cargar información de usuario aleatorio
+              function fetchRandomUser() {
+                  fetch('https://randomuser.me/api/')
+                      .then(response => response.json())
+                      .then(data => {
+                          const user = data.results[0];
+                          $('#gender').text(user.gender === 'male' ? 'Masculino' : 'Femenino');
+                          $('#location').text(`${user.location.city}, ${user.location.state}, ${user.location.country}`);
+                          $('#phone-random').text(user.phone);
+                          $('#cell').text(user.cell);
+                          $('#age').text(user.dob.age);
+                      })
+                      .catch(error => {
+                          console.error('Error al obtener datos:', error);
+                          $('#user-info').html('<p>Error al cargar la información del usuario.</p>');
+                      });
+              }
+      
+              // Validación del formulario de cita
               $('#cf-submit').click(function(event) {
-                  event.preventDefault(); // Evita que el formulario se envíe de inmediato
+                  event.preventDefault();
       
                   let isValid = true;
                   let errorMessage = "";
       
-                  let name = $('#name').val().trim();
+                  let name = $('#full-name').val().trim();
                   let email = $('#email').val().trim();
                   let date = $('input[name="date"]').val();
-                  let department = $('select').val();
-                  let phone = $('#phone').val().trim();
+                  let department = $('#department').val();
+                  let phone = $('#phone-number').val().trim();
                   let message = $('#message').val().trim();
       
                   if (name === "") {
@@ -390,12 +396,9 @@
                       errorMessage += "Por favor, seleccione un departamento.\n";
                   }
       
-                  if (phone === "") {
+                  if (!validatePhone(phone)) {
                       isValid = false;
-                      errorMessage += "Por favor, ingrese su número de teléfono.\n";
-                  } else if (!validatePhone(phone)) {
-                      isValid = false;
-                      errorMessage += "Por favor, ingrese un número de teléfono válido en el formato '+56 9 3456 2345'.\n";
+                      errorMessage += "Por favor, ingrese un número de teléfono válido en el formato '9 2345 3423'.\n";
                   }
       
                   if (message === "") {
@@ -406,23 +409,44 @@
                   if (!isValid) {
                       alert(errorMessage);
                   } else {
-                      alert("Formulario enviado correctamente.");
-                      // Vaciar los campos del formulario
-                      $('#name').val('');
-                      $('#email').val('');
-                      $('input[name="date"]').val('');
-                      $('select').val('');
-                      $('#phone').val('');
-                      $('#message').val('');
+                      
+                      $.ajax({
+                          url: 'cita.php', 
+                          type: 'POST',
+                          data: {
+                              'full-name': name,
+                              'email': email,
+                              'date': date,
+                              'department': department,
+                              'phone-number': phone,
+                              'message': message
+                          },
+                          success: function(response) {
+                              alert("Formulario enviado correctamente.");
+                              // Limpiar campos del formulario después de enviar con éxito
+                              $('#full-name').val('');
+                              $('#email').val('');
+                              $('input[name="date"]').val('');
+                              $('#department').val('');
+                              $('#phone-number').val('');
+                              $('#message').val('');
+                          },
+                          error: function(xhr, status, error) {
+                              alert("Error al enviar el formulario. Por favor, inténtelo de nuevo más tarde.");
+                              console.error(error);
+                          }
+                      });
                   }
               });
       
+              // Función para validar email
               function validateEmail(email) {
                   return email.includes('@');
               }
       
+              // Función para validar teléfono
               function validatePhone(phone) {
-                  const re = /^\+56 9 \d{4} \d{4}$/;
+                  const re = /^9 \d{4} \d{4}$/;
                   return re.test(phone);
               }
           });
@@ -435,39 +459,40 @@
     <section id="appointment" data-stellar-background-ratio="3">
      <div class="container">
          <div class="row">
-
+ 
              <div class="col-md-6 col-sm-6">
                  <img src="images/appointment-image.jpg" class="img-responsive" alt="">
              </div>
-
+ 
              <div class="col-md-6 col-sm-6">
                  <!-- CONTACT FORM HERE -->
                  <form id="appointment-form" role="form" method="post" action="#">
-
+ 
                      <!-- SECTION TITLE -->
                      <div class="section-title wow fadeInUp" data-wow-delay="0.4s">
                          <h2>HAGA UNA CITA</h2>
                      </div>
-
+ 
+                     <!-- FORM CONTENT -->
                      <div class="wow fadeInUp" data-wow-delay="0.8s">
                          <div class="col-md-6 col-sm-6">
-                             <label for="name">Nombre</label>
-                             <input type="text" class="form-control" id="name" name="name" placeholder="Nombre Completo">
+                             <label for="full-name">Nombre</label>
+                             <input type="text" class="form-control" id="full-name" name="full-name" placeholder="Nombre Completo">
                          </div>
-
+ 
                          <div class="col-md-6 col-sm-6">
                              <label for="email">Email</label>
                              <input type="email" class="form-control" id="email" name="email" placeholder="Tu Email">
                          </div>
-
+ 
                          <div class="col-md-6 col-sm-6">
                              <label for="date">Seleccione la fecha</label>
-                             <input type="date" name="date" value="" class="form-control">
+                             <input type="date" name="date" id="date" class="form-control">
                          </div>
-
+ 
                          <div class="col-md-6 col-sm-6">
-                             <label for="select">Seleccionar Departamento</label>
-                             <select class="form-control">
+                             <label for="department">Seleccionar Departamento</label>
+                             <select class="form-control" id="department" name="department">
                                  <option value="">Seleccione un Departamento</option>
                                  <option value="general">Salud General</option>
                                  <option value="cardiologia">Cardiología</option>
@@ -475,28 +500,31 @@
                                  <option value="revision">Revisión médica</option>
                              </select>
                          </div>
-
+ 
                          <div class="col-md-12 col-sm-12">
-                             <label for="telephone">Número de Teléfono</label>
-                             <input type="tel" class="form-control" id="phone" name="phone" placeholder="Número">
-                             <label for="Message">Mensaje adicional</label>
+                             <label for="phone">Número de Teléfono</label>
+                             <input type="tel" class="form-control" id="phone-number" name="phone-number" placeholder="Número">
+                             <label for="message">Mensaje adicional</label>
                              <textarea class="form-control" rows="5" id="message" name="message" placeholder="Mensaje"></textarea>
                              <button type="submit" class="form-control" id="cf-submit" name="submit">Enviar</button>
                          </div>
                      </div>
                  </form>
              </div>
-
+ 
+         </div>
+     </div>
+ </section>
          </div>
      </div>
  </section>
 
  <div id="user-info">
-     <p>Género: <span id="gender"></span></p>
-     <p>Ubicación: <span id="location"></span></p>
-     <p>Teléfono: <span id="phone"></span></p>
-     <p>Celular: <span id="cell"></span></p>
-     <p>Edad: <span id="age"></span></p>
+     <p><span id="gender"></span></p>
+     <p><span id="location"></span></p>
+     <p><span id="phone"></span></p>
+     <p><span id="cell"></span></p>
+     <p><span id="age"></span></p>
  </div>
 </body>
 </html>

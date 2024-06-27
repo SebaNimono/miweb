@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const checkoutButton = document.getElementById("checkout");
 
     let total = 0;
-    let cart = {}; // Objeto para mantener el conteo de los médicos en el carrito
+    let cart = {}; //  para mantener el conteo de los médicos en el carrito
 
     function addToCart(itemName, price) {
         if (cart[itemName]) {
@@ -110,17 +110,48 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        alert("¡Muchas gracias por su compra!");
-        cartItems.innerHTML = "";
-        total = 0;
-        totalElement.textContent = `Total: $${total}`;
-        paymentSection.style.display = "none";
-        cardNumberInput.value = "";
-        expiryDateInput.value = "";
-        cvvInput.value = "";
-        cart = {}; // Reiniciar el carrito después de la compra
+        const cartItemsArray = Object.keys(cart).map(doctorName => {
+            return {
+                doctorName: doctorName,
+                doctorPrice: cart[doctorName].price,
+                quantity: cart[doctorName].quantity
+            };
+        });
+
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "save_order.php", true);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                const response = xhr.responseText;
+                if (response.trim() === "success") {
+                    alert("¡Pedido guardado con éxito!");
+                    cartItems.innerHTML = "";
+                    total = 0;
+                    totalElement.textContent = `Total: $${total}`;
+                    paymentSection.style.display = "none";
+                    cardNumberInput.value = "";
+                    expiryDateInput.value = "";
+                    cvvInput.value = "";
+                    cart = {}; // Reiniciar el carrito después de la compra
+                } else {
+                    alert("Error al guardar el pedido: " + response);
+                }
+            }
+        };
+
+        const params = JSON.stringify({
+            cartItems: cartItemsArray,
+            cardNumber: cardNumber,
+            expiryDate: expiryDate,
+            cvv: cvv
+        });
+
+        xhr.send(params);
     });
 });
+
 
 
 

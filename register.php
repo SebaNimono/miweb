@@ -1,52 +1,60 @@
 <?php
+session_start();
+
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "vitahealth";
+$dbname = "clinicaweb";
 
-
-
-// Crear conexión
+// Establece la conexión
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Comprobar conexión
+// Verifica la conexión
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    die("Conexión fallida: " . $conn->connect_error);
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = mysqli_real_escape_string($conn, $_POST['reg-username']);
-    $email = mysqli_real_escape_string($conn, $_POST['reg-email']);
-    $password = md5($_POST['reg-password']); // Encriptar la contraseña
+// Recibie los datos del formulario
+$username = $_POST["reg-username"];
+$email = $_POST["reg-email"];
+$password = $_POST["reg-password"];
 
-    // Verificar si el usuario o el correo ya existen
-    $checkUser = $conn->prepare("SELECT * FROM creacion WHERE username=? OR email=?");
-    $checkUser->bind_param("ss", $username, $email);
-    $checkUser->execute();
-    $result = $checkUser->get_result();
+// Valida los datos recibidos
+if (empty($username) || empty($email) || empty($password)) {
+    echo "Por favor, complete todos los campos.";
+    exit();
+}
 
-    if ($result->num_rows > 0) {
-        // Ya existe un usuario con ese nombre de usuario o correo electrónico
-        echo "fail";
-    } else {
-        // No se encontró ningún usuario existente, se puede proceder con la inserción
-        $stmt = $conn->prepare("INSERT INTO creacion (username, email, password) VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $username, $email, $password);
-        
-        if ($stmt->execute()) {
-            echo "success";
-        } else {
-            echo "Correcto " . $stmt->error;
-        }
-        $stmt->close();
-    }
-    $checkUser->close();
+// Valida el formato del correo electrónico
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    echo "Por favor, ingrese un correo electrónico válido.";
+    exit();
+}
+
+// Consulta para verificar si el usuario ya existe
+$sql = "SELECT * FROM creacion WHERE username = '$username'";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+    echo "El nombre de usuario ya está en uso.";
+    exit();
+}
+
+
+$hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+// Inserta el usuario en la base de datos
+$insert_sql = "INSERT INTO creacion (username, email, password) VALUES ('$username', '$email', '$hashed_password')";
+
+if ($conn->query($insert_sql) === TRUE) {
+    $_SESSION["username"] = $username;
+    echo "success";
+} else {
+    echo "Error al registrar: " . $conn->error;
 }
 
 $conn->close();
 ?>
-
-
 
 
 
