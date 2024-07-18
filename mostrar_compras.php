@@ -1,4 +1,4 @@
-<?php
+<?php //Este php es de prueba
 session_start();
 
 // Verificar si el usuario está autenticado
@@ -11,9 +11,9 @@ $username = $_SESSION['username'];
 
 // Reemplaza con tus propias credenciales y configuración de conexión a la base de datos
 $servername = "localhost";
-$username_db = "tu_usuario_db";
-$password_db = "tu_contraseña_db";
-$dbname = "tu_nombre_db";
+$username_db = "root";
+$password_db = "";
+$dbname = "basededatos";
 
 try {
     // Conexión a la base de datos usando PDO

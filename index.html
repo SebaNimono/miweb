@@ -338,118 +338,137 @@
      </section>
      <script>
           $(document).ready(function() {
-              // Obtener y mostrar información de usuario aleatorio
-              fetchRandomUser();
-      
-              // Cargar información de usuario aleatorio
-              function fetchRandomUser() {
-                  fetch('https://randomuser.me/api/')
-                      .then(response => response.json())
-                      .then(data => {
-                          const user = data.results[0];
-                          $('#gender').text(user.gender === 'male' ? 'Masculino' : 'Femenino');
-                          $('#location').text(`${user.location.city}, ${user.location.state}, ${user.location.country}`);
-                          $('#phone-random').text(user.phone);
-                          $('#cell').text(user.cell);
-                          $('#age').text(user.dob.age);
-                      })
-                      .catch(error => {
-                          console.error('Error al obtener datos:', error);
-                          $('#user-info').html('<p>Error al cargar la información del usuario.</p>');
-                      });
-              }
-      
-              // Validación del formulario de cita
-              $('#cf-submit').click(function(event) {
-                  event.preventDefault();
-      
-                  let isValid = true;
-                  let errorMessage = "";
-      
-                  let name = $('#full-name').val().trim();
-                  let email = $('#email').val().trim();
-                  let date = $('input[name="date"]').val();
-                  let department = $('#department').val();
-                  let phone = $('#phone-number').val().trim();
-                  let message = $('#message').val().trim();
-      
-                  if (name === "") {
-                      isValid = false;
-                      errorMessage += "Por favor, ingrese su nombre completo.\n";
-                  }
-      
-                  if (email === "") {
-                      isValid = false;
-                      errorMessage += "Por favor, ingrese su email.\n";
-                  } else if (!validateEmail(email)) {
-                      isValid = false;
-                      errorMessage += "Por favor, ingrese un email válido con '@'.\n";
-                  }
-      
-                  if (date === "") {
-                      isValid = false;
-                      errorMessage += "Por favor, seleccione una fecha.\n";
-                  }
-      
-                  if (department === "") {
-                      isValid = false;
-                      errorMessage += "Por favor, seleccione un departamento.\n";
-                  }
-      
-                  if (!validatePhone(phone)) {
-                      isValid = false;
-                      errorMessage += "Por favor, ingrese un número de teléfono válido en el formato '9 2345 3423'.\n";
-                  }
-      
-                  if (message === "") {
-                      isValid = false;
-                      errorMessage += "Por favor, ingrese un mensaje.\n";
-                  }
-      
-                  if (!isValid) {
-                      alert(errorMessage);
-                  } else {
-                      
-                      $.ajax({
-                          url: 'cita.php', 
-                          type: 'POST',
-                          data: {
-                              'full-name': name,
-                              'email': email,
-                              'date': date,
-                              'department': department,
-                              'phone-number': phone,
-                              'message': message
-                          },
-                          success: function(response) {
-                              alert("Formulario enviado correctamente.");
-                              // Limpiar campos del formulario después de enviar con éxito
-                              $('#full-name').val('');
-                              $('#email').val('');
-                              $('input[name="date"]').val('');
-                              $('#department').val('');
-                              $('#phone-number').val('');
-                              $('#message').val('');
-                          },
-                          error: function(xhr, status, error) {
-                              alert("Error al enviar el formulario. Por favor, inténtelo de nuevo más tarde.");
-                              console.error(error);
-                          }
-                      });
-                  }
-              });
-      
-              // Función para validar email
-              function validateEmail(email) {
-                  return email.includes('@');
-              }
-      
-              // Función para validar teléfono
-              function validatePhone(phone) {
-                  const re = /^9 \d{4} \d{4}$/;
-                  return re.test(phone);
-              }
-          });
+    // Obtener y mostrar información de usuario aleatorio
+    fetchRandomUser();
+
+    // Cargar información de usuario aleatorio
+    function fetchRandomUser() {
+        fetch('https://randomuser.me/api/')
+            .then(response => response.json())
+            .then(data => {
+                const user = data.results[0];
+                $('#gender').text(user.gender === 'male' ? 'Masculino' : 'Femenino');
+                $('#location').text(`${user.location.city}, ${user.location.state}, ${user.location.country}`);
+                $('#phone-random').text(user.phone);
+                $('#cell').text(user.cell);
+                $('#age').text(user.dob.age);
+            })
+            .catch(error => {
+                console.error('Error al obtener datos:', error);
+                $('#user-info').html('<p>Error al cargar la información del usuario.</p>');
+            });
+    }
+
+    // Validación del formulario de cita
+    $('#cf-submit').click(function(event) {
+        event.preventDefault();
+
+        let isValid = true;
+        let errorMessage = "";
+
+        let name = $('#full-name').val().trim();
+        let email = $('#email').val().trim();
+        let date = $('input[name="date"]').val();
+        let department = $('#department').val();
+        let phone = $('#phone-number').val().trim();
+        let message = $('#message').val().trim();
+
+        if (name === "") {
+            isValid = false;
+            errorMessage += "Por favor, ingrese su nombre completo.\n";
+        }
+
+        if (email === "") {
+            isValid = false;
+            errorMessage += "Por favor, ingrese su email.\n";
+        } else if (!validateEmail(email)) {
+            isValid = false;
+            errorMessage += "Por favor, ingrese un email válido con '@'.\n";
+        }
+
+        if (date === "") {
+            isValid = false;
+            errorMessage += "Por favor, seleccione una fecha.\n";
+        }
+
+        if (department === "") {
+            isValid = false;
+            errorMessage += "Por favor, seleccione un departamento.\n";
+        }
+
+        if (!validatePhone(phone)) {
+            isValid = false;
+            errorMessage += "Por favor, ingrese un número de teléfono válido en el formato '9 2345 3423'.\n";
+        }
+
+        if (message === "") {
+            isValid = false;
+            errorMessage += "Por favor, ingrese un mensaje.\n";
+        }
+
+        if (!isValid) {
+            alert(errorMessage);
+        } else {
+            $.ajax({
+                url: 'http://127.0.0.1:8000/appointments/make_appointment/', 
+                type: 'POST',
+                headers: { 'X-CSRFToken': getCookie('csrftoken') }, // Agregar el token CSRF
+                data: {
+                    'full-name': name,
+                    'email': email,
+                    'date': date,
+                    'department': department,
+                    'phone-number': phone,
+                    'message': message
+                },
+                success: function(response) {
+                    alert(response.message);
+                    if (response.status === 'success') {
+                        // Limpiar campos del formulario después de enviar con éxito
+                        $('#full-name').val('');
+                        $('#email').val('');
+                        $('input[name="date"]').val('');
+                        $('#department').val('');
+                        $('#phone-number').val('');
+                        $('#message').val('');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert("Error al enviar el formulario. Por favor, inténtelo de nuevo más tarde.");
+                    console.error(error);
+                }
+            });
+        }
+    });
+
+    // Función para validar email
+    function validateEmail(email) {
+        return email.includes('@');
+    }
+
+    // Función para validar teléfono
+    function validatePhone(phone) {
+        const re = /^9 \d{4} \d{4}$/;
+        return re.test(phone);
+    }
+
+    // Función para obtener el token CSRF
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            let cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+
       </script>
       
   </head>
@@ -466,8 +485,8 @@
  
              <div class="col-md-6 col-sm-6">
                  <!-- CONTACT FORM HERE -->
-                 <form id="appointment-form" role="form" method="post" action="#">
- 
+                 <form id="appointment-form" role="form" method="post" action="{% url 'make_appointment' %}">
+                    {% csrf_token %}
                      <!-- SECTION TITLE -->
                      <div class="section-title wow fadeInUp" data-wow-delay="0.4s">
                          <h2>HAGA UNA CITA</h2>
